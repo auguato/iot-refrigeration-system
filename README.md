@@ -90,4 +90,4 @@ Results demonstrate that the proposed system provides proactive food safety moni
 ## License
 MIT License
 
-MIT License
+
