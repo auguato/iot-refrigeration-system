@@ -14,10 +14,10 @@ from datetime import datetime
 
 class FridgeModel:
     def __init__(self):
-        self.internal_temp   = 4.0     # °C — starting temperature
-        self.ambient_temp    = 28.0    # °C — room temperature (Kerala climate)
-        self.heat_leak_rate  = 0.03    # °C/s leak from ambient into fridge
-        self.cooling_rate    = 0.12    # °C/s drop when compressor is ON
+        self.internal_temp   = 4.0  
+        self.ambient_temp    = 28.0   
+        self.heat_leak_rate  = 0.03   
+        self.cooling_rate    = 0.12    
         self.compressor_on   = False
         self.door_open       = False
 
@@ -26,19 +26,18 @@ class FridgeModel:
         Advance simulation by dt seconds.
         Returns current sensor readings.
         """
-        # Door open adds extra heat leak
+        
         effective_leak = self.heat_leak_rate * (3.0 if self.door_open else 1.0)
 
-        # Temperature change this tick
+       
         heat_in  = effective_leak * (self.ambient_temp - self.internal_temp) * dt
         cool_out = self.cooling_rate * dt if self.compressor_on else 0.0
 
         self.internal_temp += heat_in - cool_out
 
-        # Clamp to physical limits
+      
         self.internal_temp = max(-5.0, min(self.ambient_temp, self.internal_temp))
 
-        # Add tiny sensor noise
         measured_temp = round(self.internal_temp + random.uniform(-0.1, 0.1), 2)
 
         return {
@@ -55,7 +54,7 @@ class FridgeModel:
     def simulate_door_event(self, probability: float = 0.02):
         """Randomly open/close door to simulate real usage."""
         if self.door_open:
-            self.door_open = random.random() < 0.3   # 30% chance door closes
+            self.door_open = random.random() < 0.3   
         else:
             self.door_open = random.random() < probability
 
