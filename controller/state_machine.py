@@ -17,13 +17,13 @@ from datetime import datetime
 from controller.tariff import is_peak_hour, next_peak_window, cost_for_duration
 
 
-# ── Thresholds ─────────────────────────────────────────────────────────────────
-NORMAL_TARGET   = 4.0    # °C — target in normal operation
-PRE_COOL_TARGET = 2.0    # °C — cool down to this before peak starts
-SAFETY_MAX_TEMP = 8.0    # °C — hard safety limit, always compressor ON above this
-COMPRESSOR_ON_TEMP  = NORMAL_TARGET + 1.0   # turn ON  if temp rises above this
-COMPRESSOR_OFF_TEMP = NORMAL_TARGET - 0.5   # turn OFF if temp drops below this
-PRE_COOL_LEAD_HOURS = 1  # start pre-cooling N hours before peak window
+
+NORMAL_TARGET   = 4.0   
+PRE_COOL_TARGET = 2.0   
+SAFETY_MAX_TEMP = 8.0    
+COMPRESSOR_ON_TEMP  = NORMAL_TARGET + 1.0   
+COMPRESSOR_OFF_TEMP = NORMAL_TARGET - 0.5  
+PRE_COOL_LEAD_HOURS = 1  
 
 
 class State(Enum):
@@ -37,8 +37,8 @@ class RefrigerationController:
     def __init__(self):
         self.state            = State.IDLE
         self.compressor_on    = False
-        self.total_peak_saves = 0.0    # ₹ saved by avoiding peak hours
-        self.peak_off_seconds = 0.0    # seconds compressor stayed off during peak
+        self.total_peak_saves = 0.0   
+        self.peak_off_seconds = 0.0   
         self.log              = []
 
     def decide(self, internal_temp: float, dt: datetime = None) -> bool:
@@ -55,13 +55,13 @@ class RefrigerationController:
 
         prev_state = self.state
 
-        # ── Safety override (highest priority) ────────────────────────────────
+       
         if internal_temp > SAFETY_MAX_TEMP:
             self.compressor_on = True
             self._log(dt, internal_temp, "SAFETY OVERRIDE — temp too high")
             return self.compressor_on
 
-        # ── State transitions ─────────────────────────────────────────────────
+       
         if peak_now:
             self.state = State.PEAK_HOLD
         elif not peak_now and self.state == State.PEAK_HOLD:
@@ -70,13 +70,13 @@ class RefrigerationController:
             self.state = State.PRE_COOL
         else:
             if self.state == State.RESUME:
-                # Stay in RESUME until temp stabilises
+                
                 if abs(internal_temp - NORMAL_TARGET) < 0.5:
                     self.state = State.IDLE
             elif self.state not in (State.PRE_COOL, State.PEAK_HOLD):
                 self.state = State.IDLE
 
-        # ── Compressor decision per state ─────────────────────────────────────
+      
         if self.state == State.IDLE:
             if internal_temp > COMPRESSOR_ON_TEMP:
                 self.compressor_on = True
@@ -84,19 +84,19 @@ class RefrigerationController:
                 self.compressor_on = False
 
         elif self.state == State.PRE_COOL:
-            # Cool aggressively to PRE_COOL_TARGET
+          
             self.compressor_on = internal_temp > PRE_COOL_TARGET
 
         elif self.state == State.PEAK_HOLD:
-            # Stay OFF during peak (safety override above handles emergencies)
+         
             if self.compressor_on:
-                # Track savings: cost we avoided by NOT running compressor
+               
                 self.peak_off_seconds += 1
                 self.total_peak_saves += cost_for_duration(1)
             self.compressor_on = False
 
         elif self.state == State.RESUME:
-            # Ramp back to normal target
+            
             self.compressor_on = internal_temp > NORMAL_TARGET
 
         if prev_state != self.state:
@@ -124,7 +124,7 @@ class RefrigerationController:
 if __name__ == "__main__":
     ctrl = RefrigerationController()
     print(f"Controller initialised. State: {ctrl.state.value}\n")
-    # Quick test
+   
     test_temp = 5.5
     result = ctrl.decide(test_temp)
     print(f"Temp={test_temp}°C → Compressor={'ON' if result else 'OFF'} | State={ctrl.state.value}")
