@@ -1,8 +1,7 @@
-# research/comparison.py
+
 
 from simulator.spoilage_model import SpoilageModel
 
-# Simulated temperature data for 24 hours
 
 normal_fridge_temps = [
     4, 4, 5, 5, 6, 7,
