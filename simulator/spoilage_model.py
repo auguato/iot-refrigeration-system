@@ -1,4 +1,4 @@
-# simulator/spoilage_model.py
+
 
 import math
 
