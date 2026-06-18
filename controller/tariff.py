@@ -10,18 +10,18 @@ Off-peak hours: rest of the day              (lower cost)
 from datetime import datetime
 
 
-# Tariff rates in ₹ per kWh (KSEB domestic slab approximation)
-PEAK_RATE     = 7.50   # ₹/kWh during peak hours
-OFF_PEAK_RATE = 3.50   # ₹/kWh during off-peak hours
 
-# Peak windows as (start_hour, end_hour) — 24h format
+PEAK_RATE     = 7.50   
+OFF_PEAK_RATE = 3.50   
+
+
 PEAK_WINDOWS = [
-    (6, 10),    # morning peak
-    (18, 23),   # evening peak
+    (6, 10),  
+    (18, 23), 
 ]
 
-# Compressor power consumption in kW
-COMPRESSOR_KW = 0.15   # typical 150W fridge compressor
+
+COMPRESSOR_KW = 0.15  
 
 
 def is_peak_hour(dt: datetime = None) -> bool:
@@ -52,7 +52,7 @@ def next_peak_window(dt: datetime = None) -> tuple:
     for start, end in PEAK_WINDOWS:
         if hour < start:
             return (start, end)
-    # Wrap to next day's first window
+    
     return PEAK_WINDOWS[0]
 
 
