@@ -9,10 +9,10 @@ class SpoilageModel:
     """
 
     def __init__(self):
-        # Constants
-        self.A = 1e6          # Pre-exponential factor
-        self.Ea = 50000       # Activation energy (J/mol)
-        self.R = 8.314        # Gas constant (J/mol·K)
+       
+        self.A = 1e6          
+        self.Ea = 50000       
+        self.R = 8.314      
 
         self.cumulative_growth = 0
 
@@ -57,7 +57,7 @@ class SpoilageModel:
         return round(risk, 2)
 
 
-# Example Test
+
 if __name__ == "__main__":
 
     model = SpoilageModel()
