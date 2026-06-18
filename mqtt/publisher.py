@@ -18,11 +18,11 @@ from controller.state_machine import RefrigerationController
 from controller.tariff import current_rate, is_peak_hour
 from storage.db import init_db, save_reading
 
-# ── Broker config ─────────────────────────────────────────────────────────────
+
+
 BROKER   = "broker.hivemq.com"
 PORT     = 1883
-INTERVAL = 5    # seconds between ticks
-# ──────────────────────────────────────────────────────────────────────────────
+INTERVAL = 5   
 
 
 def on_connect(client, userdata, flags, rc):
@@ -44,15 +44,15 @@ def run():
 
     try:
         while True:
-            # 1. Simulate fridge physics
+        
             reading = fridge.step(dt=float(INTERVAL))
             fridge.simulate_door_event()
 
-            # 2. Controller decides compressor state
+         
             compressor = ctrl.decide(reading["internal_temp"])
             fridge.set_compressor(compressor)
 
-            # 3. Build payloads
+    
             sensor_payload = {
                 "timestamp":     reading["timestamp"],
                 "internal_temp": reading["internal_temp"],
@@ -67,11 +67,10 @@ def run():
                 "peak_hour":    is_peak_hour(),
             }
 
-            # 4. Publish to MQTT
             client.publish("fridge/sensor", json.dumps(sensor_payload), qos=1)
             client.publish("fridge/relay",  json.dumps(relay_payload),  qos=1)
 
-            # 5. Save to local DB
+         
             save_reading({**sensor_payload, **relay_payload})
 
             print(f"[{reading['timestamp'][11:19]}] "
