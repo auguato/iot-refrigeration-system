@@ -66,7 +66,7 @@ def get_savings() -> dict:
     """).fetchone()
     conn.close()
     peak_off_ticks = row[0] or 0
-    # Each tick = 5 seconds; compressor = 0.15kW; savings vs peak rate ₹7.50
+   
     saved = round((peak_off_ticks * 5 / 3600) * 0.15 * 7.50, 4)
     return {
         "peak_off_minutes":       round(peak_off_ticks * 5 / 60, 1),
